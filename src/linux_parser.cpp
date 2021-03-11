@@ -87,28 +87,13 @@ float LinuxParser::MemoryUtilization() {
         else if (key == "MemFree:") {
             memFree = std::stof(value);
         }
-                /*
-        // TODO extent memory usage calculation 
-        // https://stackoverflow.com/questions/41224738/how-to-calculate-system-memory-usage-from-proc-meminfo-like-htop
-
-         else if (key == "Buffers:") {
-            memBuffers = std::stof(value);
-        }
-        else if (key == "MemAvailable:") {
-            memAvailable = std::stof(value);
-        }
-        else if (key == "Cached:") {
-            memCached = std::stof(value);
-        }
-        */
-      }
-      
+      }      
     }
   }
   // calculation of mem usage
-  memory_utilization = (((memTotal - memFree) * 100) / memTotal)  ;
+  memory_utilization = ((memTotal - memFree) / memTotal);
   return memory_utilization; 
-  }
+}
 
 //DONE Read and return the system uptime
 long LinuxParser::UpTime() { 
@@ -124,105 +109,127 @@ long LinuxParser::UpTime() {
   int up_s = std::stof(uptime_tString);
   uptime_min = ((int) up_s) /60;
   return uptime_min; 
-  }
-
-
-struct ProcTime{
-long int usertime;
-long int nicetime ; 
-unsigned long long int idlealltime;
-unsigned long long int systemalltime;
-unsigned long long int virtalltime;
-unsigned long long int totaltime;
-};
-static ProcTime pT;
+}
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies(ProcTime &pT) 
-{ 
-  long int userJ, niceJ, systemJ, idleJ, iowaitJ, irqJ, softirqJ, stealJ, guestJ, guestNiceJ;
-  std::string key, line, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
-  std::ifstream filestream(kProcDirectory + kStatFilename);
- 
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) 
-    {
-      std::istringstream linestream(line);
-      while (linestream >> key >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice) 
-      {
-        if (key == "cpu") 
-        {
-          //     user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
-          // cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
-            userJ = std::stoi(user);
-            niceJ = std::stoi(nice);
-            systemJ = std::stoi(system);
-            idleJ = std::stoi(idle);
-            iowaitJ = std::stoi(idle);
-            irqJ = std::stoi(irq);
-            softirqJ = std::stoi(softirq);
-            stealJ = std::stoi(steal);
-            guestJ = std::stoi(guest);
-            guestNiceJ = std::stoi(guest_nice);
-            break;
-        } 
-      }  
-    }
-  }
+long LinuxParser::Jiffies() 
+{
+  /*
+  long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+  vector<string> cpuUtils = CpuUtilization();
 
-  // Guest time is already accounted in usertime
-  pT.usertime = userJ - guestJ;     // As you see here, it subtracts guest from user time
-  pT.nicetime = niceJ - guestNiceJ; // and guest_nice from nice time
-  pT.idlealltime = idleJ + iowaitJ;  // ioWait is added in the idleTime
-  pT.systemalltime = systemJ + irqJ + softirqJ;
-  pT.virtalltime = guestJ + guestNiceJ;
-  pT.totaltime = pT.usertime + pT.nicetime + pT.systemalltime + pT.idlealltime + stealJ + pT.virtalltime;
+  user = std::stol(cpuUtils[CPUStates::kUser_]);
+  nice = std::stol(cpuUtils[CPUStates::kNice_]);
+  system = std::stol(cpuUtils[CPUStates::kSystem_]);
+  idle = std::stol(cpuUtils[CPUStates::kIdle_]);
+  iowait = std::stol(cpuUtils[CPUStates::kIOwait_]);
+  irq = std::stol(cpuUtils[CPUStates::kIRQ_]);
+  softirq = std::stol(cpuUtils[CPUStates::kSoftIRQ_]);
+  steal = std::stol(cpuUtils[CPUStates::kSteal_]);
+  guest = std::stol(cpuUtils[CPUStates::kGuest_]);
+  guest_nice = std::stol(cpuUtils[CPUStates::kGuestNice_]);
 
-  return pT.totaltime; 
+  long usertime = user - guest;     // As you see here, it subtracts guest from user time
+  long nicetime = nice - guest_nice; // and guest_nice from nice time
+  long idlealltime = idle + iowait;  // ioWait is added in the idleTime
+  long systemalltime = system + irq + softirq;
+  long virtalltime = guest + guest_nice;
+  long totaltime = usertime + nicetime + systemalltime + idlealltime + steal + virtalltime;
+
+  return  totaltime;
+  */
+  return 0;
 }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
-
-static time_t* GetTime()
-{
-  time_t* pNow = nullptr;
-  ctime(pNow);
-  return pNow;
-}
-
-
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() 
+long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) 
 { 
-  
-  static ProcTime prevPt, currPt;
-
-  Jiffies(prevPt);
-
-  Jiffies(currPt);
-
-  while((currPt.totaltime - prevPt.totaltime) > 10000)
+  /*
+  std::string cpu, line, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+  vector<string> list = {};
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if(filestream.is_open())
   {
-    Jiffies(currPt);
-  }
-  long totaled = currPt.totaltime - prevPt.totaltime;
-  long idled = currPt.idlealltime - prevPt.idlealltime;
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    //     user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
+    // cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
+    linestream >> cpu >> user >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice; 
 
-long activeJiffies_percent = (totaled - idled) / totaled *100;
-  return activeJiffies_percent; 
+    list.push_back(user);
+    list.push_back(system);
+    list.push_back(idle);
+    list.push_back(iowait);
+    list.push_back(irq);
+    list.push_back(softirq);
+    list.push_back(guest);
+    list.push_back(guest_nice);
+  }
+  */
+  return 0;   
 }
 
-// TODO: Read and return the number of idle jiffies for the system
+
+long LinuxParser::ActiveJiffies() 
+{ // Read and return the number of active jiffies for the system 
+  /*
+  long user, nice, system, irq, softirq, steal;
+  vector<string> cpuUtils = CpuUtilization();
+
+  user = std::stol(cpuUtils[CPUStates::kUser_]);
+  nice = std::stol(cpuUtils[CPUStates::kNice_]);
+  system = std::stol(cpuUtils[CPUStates::kSystem_]);
+  irq = std::stol(cpuUtils[CPUStates::kIRQ_]);
+  softirq = std::stol(cpuUtils[CPUStates::kSoftIRQ_]);
+  steal = std::stol(cpuUtils[CPUStates::kSteal_]);
+
+  return user + nice + system + irq + softirq + steal;
+  */
+ return 0;
+}
+
 long LinuxParser::IdleJiffies() 
-{ 
-  Jiffies();
-  return pT.idlealltime; 
+{ // Read and return the number of idle jiffies for the system
+  /*
+  long idle, iowait;
+  vector<string> cpuUtils = CpuUtilization();
+
+  idle = std::stol(cpuUtils[CPUStates::kIdle_]);
+  iowait = std::stol(cpuUtils[CPUStates::kIOwait_]);
+
+  long totalIdle = idle + iowait;
+
+  return totalIdle; 
+  */
+ return 0;
 }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() 
+{ 
+  std::string cpu, line, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+  vector<string> list;
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if(filestream.is_open())
+  {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    //     user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
+    // cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
+    linestream >> cpu >> user >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice; 
+
+    list.push_back(user);
+    list.push_back(system);
+    list.push_back(idle);
+    list.push_back(iowait);
+    list.push_back(irq);
+    list.push_back(softirq);
+    list.push_back(guest);
+    list.push_back(guest_nice);
+  }
+  return list;   
+}
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() 
