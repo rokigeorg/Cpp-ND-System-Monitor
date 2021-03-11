@@ -220,11 +220,13 @@ vector<string> LinuxParser::CpuUtilization()
     linestream >> cpu >> user >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice; 
 
     list.push_back(user);
+    list.push_back(nice);
     list.push_back(system);
     list.push_back(idle);
     list.push_back(iowait);
     list.push_back(irq);
     list.push_back(softirq);
+    list.push_back(steal);
     list.push_back(guest);
     list.push_back(guest_nice);
   }

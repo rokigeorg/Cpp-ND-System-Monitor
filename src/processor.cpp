@@ -11,18 +11,18 @@ Processor::Processor()
 
 float Processor::Utilization() 
 { //Return the aggregate CPU utilization
-    long totaled , idled;
+    float totaled , idled;
 
     currIdle = LinuxParser::IdleJiffies();
     currTotal = LinuxParser::Jiffies();
 
-    totaled = currTotal - prevTotal;
-    idled = currIdle - prevIdle;
+    totaled = float(currTotal) - float(prevTotal);
+    idled = float(currIdle) - float(prevIdle);
 
-    long cpuUtil = (totaled - idled) / totaled ;
+    float cpuUtil = (totaled - idled) / totaled ;
 
     prevIdle = currIdle;
     prevTotal = currTotal;  
 
-    return float(cpuUtil); 
+    return 0; 
 }
