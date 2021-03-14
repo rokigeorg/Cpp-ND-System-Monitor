@@ -7,11 +7,13 @@ Processor::Processor()
     currIdle = LinuxParser::IdleJiffies();
     prevTotal = LinuxParser::Jiffies();
     prevIdle = LinuxParser::IdleJiffies();
+    cpuUtil = 0;
 }
 
 float Processor::Utilization() 
 { //Return the aggregate CPU utilization
-    float totaled , idled;
+    float totaled = 0; 
+    float idled = 0;
 
     currIdle = LinuxParser::IdleJiffies();
     currTotal = LinuxParser::Jiffies();
@@ -19,10 +21,15 @@ float Processor::Utilization()
     totaled = float(currTotal) - float(prevTotal);
     idled = float(currIdle) - float(prevIdle);
 
-    float cpuUtil = (totaled - idled) / totaled ;
+    float actived = (totaled - idled); 
+    // avoid to divite by 0
+    if(actived > 0)
+    {
+        cpuUtil = actived / totaled ;
+    }
 
     prevIdle = currIdle;
     prevTotal = currTotal;  
 
-    return 0; 
+    return cpuUtil; 
 }

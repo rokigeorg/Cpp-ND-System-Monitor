@@ -13,6 +13,7 @@ class Processor {
     long prevTotal;
     long currIdle;
     long prevIdle;
+    float cpuUtil;
 };
 
 #endif

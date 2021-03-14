@@ -7,6 +7,7 @@
 
 #include "linux_parser.h"
 
+using std::stol;
 using std::stof;
 using std::string;
 using std::to_string;
@@ -111,23 +112,33 @@ long LinuxParser::UpTime() {
   return uptime_min; 
 }
 
-// TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() 
-{
-  /*
+{ //Read and return the number of jiffies for the system
   long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
   vector<string> cpuUtils = CpuUtilization();
 
-  user = std::stol(cpuUtils[CPUStates::kUser_]);
-  nice = std::stol(cpuUtils[CPUStates::kNice_]);
-  system = std::stol(cpuUtils[CPUStates::kSystem_]);
-  idle = std::stol(cpuUtils[CPUStates::kIdle_]);
-  iowait = std::stol(cpuUtils[CPUStates::kIOwait_]);
-  irq = std::stol(cpuUtils[CPUStates::kIRQ_]);
-  softirq = std::stol(cpuUtils[CPUStates::kSoftIRQ_]);
-  steal = std::stol(cpuUtils[CPUStates::kSteal_]);
-  guest = std::stol(cpuUtils[CPUStates::kGuest_]);
-  guest_nice = std::stol(cpuUtils[CPUStates::kGuestNice_]);
+  string juser = cpuUtils[CPUStates::kUser_];
+  string jnice = cpuUtils[CPUStates::kNice_];
+  string jsystem = cpuUtils[CPUStates::kSystem_];
+  string jidle = cpuUtils[CPUStates::kIdle_];
+  string jiowait = cpuUtils[CPUStates::kIOwait_];
+  string jirq = cpuUtils[CPUStates::kIRQ_];
+  string jsoftirq = cpuUtils[CPUStates::kSoftIRQ_];
+  string jsteal = cpuUtils[CPUStates::kSteal_];
+  string jguest = cpuUtils[CPUStates::kGuest_];
+  string jguest_nice = cpuUtils[CPUStates::kGuestNice_];
+
+  user =  std::stol(juser);
+  nice = std::stol(jnice);
+  system = std::stol(jsystem);
+  idle = std::stol(jidle);
+  iowait = std::stol(jiowait);
+  irq = std::stol(jirq);
+  softirq = std::stol(jsoftirq);
+  steal = stol(jsteal);
+  guest = stol(jguest);
+  guest_nice = stol(jguest_nice);
+
 
   long usertime = user - guest;     // As you see here, it subtracts guest from user time
   long nicetime = nice - guest_nice; // and guest_nice from nice time
@@ -137,8 +148,6 @@ long LinuxParser::Jiffies()
   long totaltime = usertime + nicetime + systemalltime + idlealltime + steal + virtalltime;
 
   return  totaltime;
-  */
-  return 0;
 }
 
 // TODO: Read and return the number of active jiffies for a PID
@@ -173,7 +182,7 @@ long LinuxParser::ActiveJiffies(int pid[[maybe_unused]])
 
 long LinuxParser::ActiveJiffies() 
 { // Read and return the number of active jiffies for the system 
-  /*
+
   long user, nice, system, irq, softirq, steal;
   vector<string> cpuUtils = CpuUtilization();
 
@@ -185,13 +194,11 @@ long LinuxParser::ActiveJiffies()
   steal = std::stol(cpuUtils[CPUStates::kSteal_]);
 
   return user + nice + system + irq + softirq + steal;
-  */
- return 0;
 }
 
 long LinuxParser::IdleJiffies() 
 { // Read and return the number of idle jiffies for the system
-  /*
+
   long idle, iowait;
   vector<string> cpuUtils = CpuUtilization();
 
@@ -201,12 +208,10 @@ long LinuxParser::IdleJiffies()
   long totalIdle = idle + iowait;
 
   return totalIdle; 
-  */
- return 0;
 }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() 
+std::vector<std::string> LinuxParser::CpuUtilization() 
 { 
   std::string cpu, line, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
   vector<string> list;
@@ -217,7 +222,7 @@ vector<string> LinuxParser::CpuUtilization()
     std::istringstream linestream(line);
     //     user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
     // cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
-    linestream >> cpu >> user >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice; 
+    linestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice; 
 
     list.push_back(user);
     list.push_back(nice);
@@ -275,13 +280,30 @@ int LinuxParser::RunningProcesses()
   return runningProcesses;   
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid[[maybe_unused]]) { return string(); }
+
+string LinuxParser::Command(int pid) 
+{ // Read and return the command associated with a process
+  //Read file /proc/pid/cmdline
+  std::string cmdLine, line;
+
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
+  if(filestream.is_open())
+  {
+    if(std::getline(filestream, line))
+    {
+      cmdLine = line;
+    }
+  }
+  return cmdLine; 
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid[[maybe_unused]]) { return string(); }
+string LinuxParser::Ram(int pid[[maybe_unused]]) 
+{ 
+  
+  return string(); 
+}
 
 // TODO: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
