@@ -10,8 +10,10 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int id, string cmd): id_(id), cmdLine_(cmd)
-{}
+Process::Process(int id, std::string cmd, std::string ram): id_(id), cmdLine_(cmd), ramSize_(ram)
+{
+    
+}
 
 int Process::Pid() 
 { // Return this process's ID
@@ -28,7 +30,7 @@ string Process::Command()
 }
 
 // TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+string Process::Ram() { return ramSize_; }
 
 // TODO: Return the user (name) that generated this process
 string Process::User() { return string(); }

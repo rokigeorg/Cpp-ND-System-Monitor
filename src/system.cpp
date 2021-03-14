@@ -24,7 +24,10 @@ vector<Process>& System::Processes()
     vector<int> listPids = LinuxParser::Pids();
     for(int id : listPids)
     {
-        Process p = Process(id, LinuxParser::Command(id));
+        Process p = Process(
+            id, 
+            LinuxParser::Command(id),
+            LinuxParser::Ram(id));
         processes_.push_back(p);
     } 
     return processes_; 
