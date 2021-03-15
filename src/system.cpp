@@ -27,7 +27,11 @@ vector<Process>& System::Processes()
         Process p = Process(
             id, 
             LinuxParser::Command(id),
-            LinuxParser::Ram(id));
+            LinuxParser::Uid(id),
+            LinuxParser::User(id),
+            LinuxParser::Ram(id)
+        );
+
         processes_.push_back(p);
     } 
     return processes_; 

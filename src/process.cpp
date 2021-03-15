@@ -10,9 +10,18 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int id, std::string cmd, std::string ram): id_(id), cmdLine_(cmd), ramSize_(ram)
+Process::Process(int id, 
+std::string cmd, 
+std::string uid, 
+std::string userName, 
+std::string ram
+): 
+id_(id), 
+cmdLine_(cmd), 
+uid_(uid),
+user_(userName),
+ramSize_(ram)
 {
-    
 }
 
 int Process::Pid() 
