@@ -8,30 +8,30 @@ It contains relevant attributes as shown below
 */
 class Process {
  public:
-    Process(
-      int id, 
-      std::string cmd, 
-      std::string uid, 
-      std::string userName ,
-      std::string ramSize_);
-    
-    
-    int Pid();                               // TODO: See src/process.cpp                     
-    std::string User();                      // TODO: See src/process.cpp
-    std::string Command();                   // TODO: See src/process.cpp
-    float CpuUtilization();                  // TODO: See src/process.cpp
-    std::string Ram();                       // TODO: See src/process.cpp
-    long int UpTime();                       // TODO: See src/process.cpp
-    bool operator<(Process const& a) const;  // TODO: See src/process.cpp
+  Process(int id, std::string cmd, std::string uid, std::string userName,
+          std::string ram, long uptime, long activJiffies,
+          long systemUptime_sec);
 
-  // TODO: Declare any necessary private members
+  int Pid();                               // Done: See src/process.cpp
+  std::string User();                      // Done: See src/process.cpp
+  std::string Command();                   // Done: See src/process.cpp
+  float CpuUtilization() const;            // Done: See src/process.cpp
+  std::string Ram();                       // Done: See src/process.cpp
+  long int UpTime();                       // Done: See src/process.cpp
+  bool operator<(Process const& a) const;  // Done: See src/process.cpp
+  long GetRam_Mb() const;
+  // Done: Declare any necessary private members
  private:
- int id_;
- int ramMb_;
- std::string cmdLine_;
- std::string ramSize_;
- std::string uid_;
- std::string user_;
+  int id_;
+  std::string cmdLine_;
+  std::string uid_;
+  std::string user_;
+  std::string ramSize_;
+  long uptime_;
+  long totalActivTime_;
+  long systemUptime_sec_;
+  long ramMb_;
+  float cpuUtil_;
 };
 
 #endif
