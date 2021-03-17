@@ -4,6 +4,15 @@
 
 using std::string;
 
+static std::string AddZeroPrefix(int n)
+{
+  if(n < 10)
+  {
+    return "0"+std::to_string(n);
+  }
+  return std::to_string(n);
+}
+
 // Done: Complete this helper function
 // INPUT: Long int measuring seconds
 // OUTPUT: HH:MM:SS
@@ -13,7 +22,7 @@ string Format::ElapsedTime(long seconds) {
   int second = seconds % 3600;
   int minute = second / 60;
   second = second % 60;
-  string hhmmss = std::to_string(hour) + ":" + std::to_string(minute) + ":" +
-                  std::to_string(second);
+  string hhmmss = AddZeroPrefix(hour) + ":" + AddZeroPrefix(minute) + ":" +
+                  AddZeroPrefix(second);
   return hhmmss;
 }

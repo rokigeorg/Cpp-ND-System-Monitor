@@ -16,8 +16,8 @@ float Processor::Utilization() {  // Return the aggregate CPU utilization
   currIdle = LinuxParser::IdleJiffies();
   currTotal = LinuxParser::Jiffies();
 
-  totaled = float(currTotal) - float(prevTotal);
-  idled = float(currIdle) - float(prevIdle);
+  totaled = static_cast<float>(currTotal) - static_cast<float>(prevTotal);
+  idled = static_cast<float>(currIdle) - static_cast<float>(prevIdle);
 
   float actived = (totaled - idled);
   // avoid to divite by 0

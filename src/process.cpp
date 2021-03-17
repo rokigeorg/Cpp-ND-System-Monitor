@@ -23,7 +23,7 @@ Process::Process(int id, std::string cmd, std::string uid, std::string userName,
       systemUptime_sec_(systemUptime_sec) {
   ramMb_ = std::stol(ramSize_);
 
-  long seconds = systemUptime_sec_ - uptime_;
+  const long seconds = systemUptime_sec_ - uptime_;
   try {
     cpuUtil_ = float(totalActivTime_) / float(seconds);
 
@@ -62,5 +62,4 @@ long Process::GetRam_Mb() const { return ramMb_; }
 bool Process::operator<(Process const& a) const {
   // Overload the "less than" comparison operator for Process objects
   return cpuUtil_ < a.CpuUtilization();
-  // return ramMb_ < a.GetRam_Mb();
 }

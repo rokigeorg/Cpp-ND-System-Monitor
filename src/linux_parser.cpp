@@ -375,5 +375,5 @@ long LinuxParser::UpTime(int pid) {  // Read and return the uptime of a process
   } catch (...) {
     starttime = 0;
   }
-  return starttime;
+  return UpTime() - starttime;
 }

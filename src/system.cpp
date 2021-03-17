@@ -20,6 +20,7 @@ Processor& System::Cpu() { return cpu_; }
 vector<Process>&
 System::Processes() {  // Return a container composed of the system's processes
 
+    processes_.clear();
   vector<int> listPids = LinuxParser::Pids();
   for (int id : listPids) {
     Process p = Process(id, LinuxParser::Command(id), LinuxParser::Uid(id),
@@ -50,6 +51,5 @@ int System::TotalProcesses() { return LinuxParser::TotalProcesses(); }
 
 // Done: Return the number of seconds since the system started running
 long int System::UpTime() {
-  long x = LinuxParser::UpTime();
-  return x;
+  return LinuxParser::UpTime();
 }
