@@ -309,21 +309,24 @@ string LinuxParser::Ram(
       }
     }
   }
-  return ramSize;
+  // KB to MB convertion
+  long ramKb = std::stol(ramSize);
+  long ramMb = ramKb > 0 ? ramKb / 1024 : 0; 
+  return std::to_string(ramMb);
 }
 
 string LinuxParser::Uid(
     int pid) {  // Read and return the user ID associated with a process
   std::string key, value, line, uid;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +
-                           kStatFilename);
+                           kStatusFilename);
 
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
-      while (linestream >> key >> value) {
+      while(linestream >> key >> value){
         if (key == "Uid:") {
-          uid = std::stoi(value);
+          uid = value;
           break;
         }
       }
@@ -344,8 +347,8 @@ string LinuxParser::User(
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> username >> x >> uidNumber) {
-        if (uidNumber == std::to_string(pid)) {
-          myUser = username;
+        if (uidNumber == Uid(pid)) {
+          myUser = username; 
           break;
         }
       }

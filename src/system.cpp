@@ -28,7 +28,7 @@ System::Processes() {  // Return a container composed of the system's processes
                         LinuxParser::UpTime(id), LinuxParser::ActiveJiffies(id),
                         LinuxParser::UpTime());
 
-    processes_.push_back(p);
+    processes_.emplace_back(p);
   }
   std::sort(processes_.rbegin(), processes_.rend());
   return processes_;
