@@ -23,10 +23,8 @@ Process::Process(int id, std::string cmd, std::string uid, std::string userName,
       systemUptime_sec_(systemUptime_sec) {
   ramMb_ = std::stol(ramSize_);
 
-  const long seconds = systemUptime_sec_ - uptime_;
   try {
-    cpuUtil_ = float(totalActivTime_) / float(seconds);
-
+    cpuUtil_ = float(totalActivTime_) / float(uptime_);
   } catch (...) {
     cpuUtil_ = 0;
   }
